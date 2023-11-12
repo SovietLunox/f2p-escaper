@@ -5,15 +5,12 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
 @ConfigGroup("F2P Escaper")
-public interface F2PEscaperConfig extends Config
-{
+public interface F2PEscaperConfig extends Config {
 	@ConfigItem(
-		keyName = "greeting",
-		name = "Welcome Greeting",
-		description = "The message to show to the user when they login"
+			keyName = "showProcessing",
+			name = "Show Processing methods",
+			description = "Show processing moneymaking methods",
+			position = 0
 	)
-	default String greeting()
-	{
-		return "Hello";
-	}
+	default boolean showProcessing() { return true; }
 }

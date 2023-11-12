@@ -9,6 +9,8 @@ import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
@@ -29,12 +31,15 @@ import java.util.List;
 public class F2PEscaperPlugin extends Plugin {
 
 	//setting up config for later
+	@Inject
 	private ConfigManager configManager;
+	@Inject
 	private F2PEscaperConfig config;
+	@Inject
+	private EventBus eventBus;
 
-	public F2PEscaperPlugin() {
-		// Initialize anything needed for the default constructor
-	}
+	public F2PEscaperPlugin() {}
+
 	@Inject
 	public F2PEscaperPlugin(ConfigManager configManager) {
 		this.configManager = configManager;
@@ -59,7 +64,8 @@ public class F2PEscaperPlugin extends Plugin {
 
 	@Override
 	protected void startUp() throws Exception {
-		panel = new F2PEscaperPanel(itemManager);
+		eventBus.register(this);
+		panel = new F2PEscaperPanel(itemManager, config);
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "F2PE_icon.png");
 		navButton = NavigationButton.builder()
 				.tooltip("F2P Escaper")
@@ -77,4 +83,14 @@ public class F2PEscaperPlugin extends Plugin {
 		clientToolbar.removeNavigation(navButton);
 	}
 
+	// Example: Add a listener to update the panel when the config changes
+	@Subscribe
+	private void onConfigChanged(ConfigChanged event) {
+		if (event.getGroup().equals("F2P Escaper")) {
+			// Retrieve the updated configuration
+			F2PEscaperConfig updatedConfig = configManager.getConfig(F2PEscaperConfig.class);
+			panel.updateDisplay(updatedConfig);
+
+		}
+	}
 }

@@ -4,6 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.List;
+import java.util.Locale;
 import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -37,7 +38,10 @@ class F2PEscaperPanel extends PluginPanel {
     private JLabel redberryPriceLabel = new JLabel();
     private JLabel redDyeAnswer = new JLabel();
     private JLabel redDyePriceLabel = new JLabel();
-
+    private JLabel chocolateHeader = new JLabel("<html><h3>Chocolate Grind Money Maker</h3></html>");
+    private JLabel chocolateBarPriceLabel = new JLabel();
+    private JLabel chocolateDustPriceLabel = new JLabel();
+    private JLabel chocolateAnswer = new JLabel();
 
     private final JPanel F2PEscaperPanel = new JPanel();
     private GridBagConstraints c;
@@ -53,18 +57,48 @@ class F2PEscaperPanel extends PluginPanel {
     }
     private void displayLabels(JLabel[] labels) {
         for (JLabel label : labels) {
+            label.setVisible(true);
             add(label, c);
             c.gridy++;
         }
     }
+    private void hideLabels(JLabel[] labels) {
+        for (JLabel label : labels) {
+            label.setVisible(false);
+        }
+    }
+    private void setupLabels(JLabel label, String text, int price, int desiredPrice, boolean isBuy) {
+        if ((isBuy && price <= desiredPrice) || (!isBuy && price >= desiredPrice)) {
+            label.setText("<html>" + text + price + "gp) <font color='green'>&#x2714;</font></html>");
+        } else {
+            label.setText("<html>" + text + price + "gp) <font color='red'>&#x2718;</font></html>");
+        }
+    }
+    private void setupProfitLabels(JLabel label, int profit, int iterationsHour) {
+        int hourlyProfit = profit*iterationsHour;
+        String hourlyProfitDisplay = String.format(Locale.US, "%,d", hourlyProfit).replace(',', '.');
+        if (profit > 0) {
+            if (profit > 100) {
+                label.setText("<html>Current Profit: <font color='green'>"+profit + "gp (Good Profit) ("+hourlyProfitDisplay+"GP/H) </font></html>");
+            } else {
+                label.setText("<html>Current Profit: <font color='yellow'>" + profit + "gp (Moderate Profit) ("+hourlyProfitDisplay+"GP/H) </font></html>");
+            }
+        } else {
+            label.setText("<html>Current Profit: <font color='red'>"+profit + "gp (Loss) ("+hourlyProfitDisplay+"GP/H) </font></html>");
+        }
+    }
     @Inject
-    public F2PEscaperPanel(ItemManager itemManager) {
+    public F2PEscaperPanel(ItemManager itemManager, F2PEscaperConfig config) {
+        //getting config settings
         super();
         this.itemManager = itemManager;
+        boolean showProcessing = config.showProcessing();
+        log.info("LUNAAA"+showProcessing);
+
+        //setting layout
         setBorder(new EmptyBorder(18, 10, 0, 10));
         setBackground(ColorScheme.DARK_GRAY_COLOR);
         setLayout(new GridBagLayout());
-
         c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
@@ -82,36 +116,10 @@ class F2PEscaperPanel extends PluginPanel {
         this.result = itemManager.search("Pie Shell");
         int pieShellPrice = findItemPrice(result, "Pie shell");
         int pieShellProfit = pieShellPrice-pieDishPrice-pastryDoughPrice;
-
-        //Create Displays
-        if(pieDishPrice<=50){
-            pieDishPriceLabel = new JLabel("<html>Buy Pie Dish: (50gp | " + pieDishPrice + "gp) <font color='green'>&#x2714;</font></html>");
-        } else {
-            pieDishPriceLabel = new JLabel("<html>Buy Pie Dish: (50gp | " + pieDishPrice + "gp) <font color='red'>&#x2718;</font></html>");
-        }
-
-        if(pastryDoughPrice<=256){
-            pastryDoughPriceLabel = new JLabel("<html>Buy Pastry Dough: (256gp | " + pastryDoughPrice + "gp) <font color='green'>&#x2714;</font></html>");
-        } else {
-            pastryDoughPriceLabel = new JLabel("<html>Buy Pastry Dough: (256gp | " + pastryDoughPrice + "gp) <font color='red'>&#x2718;</font></html>");
-        }
-
-        if(pieShellPrice>=484){
-            pieShellPriceLabel = new JLabel("<html>Sell Pie Shell: (256gp | " + pieShellPrice + "gp) <font color='green'>&#x2714;</font></html>");
-        } else {
-            pieShellPriceLabel = new JLabel("<html>Sell Pie Shell: (256gp | " + pieShellPrice + "gp) <font color='red'>&#x2718;</font></html>");
-        }
-
-        if(pieShellProfit>0){
-            if (pieShellProfit>100){
-                pieShellAnswer = new JLabel("<html>Current Profit: <font color='green'>"+pieShellProfit+" (Good Profit)</font></html>");
-            } else {
-                pieShellAnswer = new JLabel("<html>Current Profit: <font color='yellow'>"+pieShellProfit+" (Moderate Profit)</font></html> ");
-            }
-        } else {
-            pieShellAnswer = new JLabel("<html>Current Profit: <font color='red'>"+pieShellProfit+" (Loss)</font></html>");
-        }
-
+        setupLabels(pieDishPriceLabel,"Buy Pie Dish: (50gp | ",pieDishPrice,50, true);
+        setupLabels(pastryDoughPriceLabel,"Buy Pastry Dough: (256gp | ",pastryDoughPrice,256, true);
+        setupLabels(pieShellPriceLabel,"Sell Pie Shell: (484gp | ",pieShellPrice,484, false);
+        setupProfitLabels(pieShellAnswer,pieShellProfit,125);
 
         //Red Dye moneymaker
         this.result = itemManager.search("Redberries");
@@ -119,37 +127,47 @@ class F2PEscaperPanel extends PluginPanel {
         this.result = itemManager.search("Red Dye");
         int redDyePrice = findItemPrice(result, "Red dye");
         int redDyeProfit = redDyePrice-((redberriesPrice*3)+5);
+        setupLabels(redberryPriceLabel,"Buy Redberries: (70gp | ",redberriesPrice,70, true);
+        setupLabels(redDyePriceLabel,"Sell Red Dye: (386gp | ",redDyePrice,386, false);
+        setupProfitLabels(redDyeAnswer,redDyeProfit,1000);
 
-        //Create Displays
-        if(redberriesPrice<=70){
-            redberryPriceLabel = new JLabel("<html>Buy Redberries: (70gp | " + redberriesPrice + "gp) <font color='green'>&#x2714;</font></html>");
-        } else {
-            redberryPriceLabel = new JLabel("<html>Buy Redberries: (70gp | " + redberriesPrice + "gp) <font color='red'>&#x2718;</font></html>");
-        }
-        if(redDyePrice>=386){
-            redDyePriceLabel = new JLabel("<html>Sell Red Dye: (386gp | " + redDyePrice + "gp) <font color='green'>&#x2714;</font></html>");
-        } else {
-            redDyePriceLabel = new JLabel("<html>Sell Red Dye: (386gp | " + redDyePrice + "gp) <font color='red'>&#x2718;</font></html>");
-        }
-        if(redDyeProfit>0){
-            if (redDyeProfit>100){
-                redDyeAnswer = new JLabel("<html>Current Profit: <font color='green'>"+redDyeProfit+" (Good Profit)</font></html>");
-            } else {
-                redDyeAnswer = new JLabel("<html>Current Profit: <font color='yellow'>"+redDyeProfit+" (Moderate Profit)</font></html> ");
-            }
-        } else {
-            redDyeAnswer = new JLabel("<html>Current Profit: <font color='red'>"+redDyeProfit+" (Loss)</font></html>");
-        }
+        //Griding Chocolate Bar moneymaker
+        this.result = itemManager.search("chocolate bar");
+        int chocolateBarPrice = findItemPrice(result, "Chocolate bar");
+        this.result = itemManager.search("chocolate dust");
+        int chocolateDustPrice = findItemPrice(result, "Chocolate dust");
+        int chocolateProfit = chocolateDustPrice-chocolateBarPrice;
+        setupLabels(chocolateBarPriceLabel,"Buy Chocolate Bar: (20gp | ",chocolateBarPrice,20, true);
+        setupLabels(chocolateDustPriceLabel,"Sell Chocolate Dust: (43gp | ",chocolateDustPrice,43, false);
+        setupProfitLabels(chocolateAnswer,chocolateProfit, 1800);
 
         //Displaying
-        pieShellHeader.setHorizontalAlignment(JLabel.CENTER);
-        redDyeHeader.setHorizontalAlignment(JLabel.CENTER);
+        JLabel[] headerLabels = {headerLabel};
+        displayLabels(headerLabels);
+        updateDisplay(config);
 
-        JLabel[] pieShellLabels = {headerLabel, pieShellHeader, pieDishPriceLabel, pastryDoughPriceLabel, pieShellPriceLabel, pieShellAnswer};
+    }
+    public void updateDisplay(F2PEscaperConfig config){
+        boolean showProcessing = config.showProcessing();
+        JLabel[] pieShellLabels = {pieShellHeader, pieDishPriceLabel, pastryDoughPriceLabel, pieShellPriceLabel, pieShellAnswer};
         JLabel[] redDyeLabels = {redDyeHeader, redberryPriceLabel, redDyePriceLabel, redDyeAnswer};
-        displayLabels(pieShellLabels);
-        displayLabels(redDyeLabels);
+        JLabel[] chocolateLabels = {chocolateHeader, chocolateBarPriceLabel, chocolateDustPriceLabel, chocolateAnswer};
 
+        if(showProcessing){
+            pieShellHeader.setHorizontalAlignment(JLabel.CENTER);
+            redDyeHeader.setHorizontalAlignment(JLabel.CENTER);
+            chocolateHeader.setHorizontalAlignment(JLabel.CENTER);
 
+            displayLabels(pieShellLabels);
+            displayLabels(redDyeLabels);
+            displayLabels(chocolateLabels);
+
+        } else {
+            hideLabels(pieShellLabels);
+            hideLabels(redDyeLabels);
+            hideLabels(chocolateLabels);
+        }
+
+        repaint();
     }
 }
