@@ -22,9 +22,28 @@ import java.util.List;
 
 @Slf4j
 @PluginDescriptor(
-	name = "F2P Escaper"
+	name = "F2P Escaper",
+	description = "Assists free-to-play players in finding optimal moneymaking methods.",
+	tags = {"F2P", "moneymaking"}
 )
 public class F2PEscaperPlugin extends Plugin {
+
+	//setting up config for later
+	private ConfigManager configManager;
+	private F2PEscaperConfig config;
+
+	public F2PEscaperPlugin() {
+		// Initialize anything needed for the default constructor
+	}
+	@Inject
+	public F2PEscaperPlugin(ConfigManager configManager) {
+		this.configManager = configManager;
+	}
+	@Provides
+	F2PEscaperConfig provideConfig(ConfigManager configManager) {
+		return configManager.getConfig(F2PEscaperConfig.class);
+	}
+
 
 	@Inject
 	private Client client;
@@ -40,7 +59,6 @@ public class F2PEscaperPlugin extends Plugin {
 
 	@Override
 	protected void startUp() throws Exception {
-
 		panel = new F2PEscaperPanel(itemManager);
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "F2PE_icon.png");
 		navButton = NavigationButton.builder()
@@ -51,6 +69,7 @@ public class F2PEscaperPlugin extends Plugin {
 				.build();
 
 		clientToolbar.addNavigation(navButton);
+
 	}
 
 	@Override
