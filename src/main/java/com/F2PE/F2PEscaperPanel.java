@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 class F2PEscaperPanel extends PluginPanel {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private static final Logger log = LoggerFactory.getLogger(com.F2PE.F2PEscaperPanel.class);
     private final ItemManager itemManager;
     private static final Dimension PREFERRED_SIZE = new Dimension(PluginPanel.PANEL_WIDTH - 20, 30);
     private static final Dimension MINIMUM_SIZE = new Dimension(0, 30);
