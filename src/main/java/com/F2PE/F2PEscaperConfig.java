@@ -1,11 +1,11 @@
-package com.example;
+package com.F2PE;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("example")
-public interface ExampleConfig extends Config
+@ConfigGroup("F2P Escaper")
+public interface F2PEscaperConfig extends Config
 {
 	@ConfigItem(
 		keyName = "greeting",
