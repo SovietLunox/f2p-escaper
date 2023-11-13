@@ -20,4 +20,18 @@ public interface F2PEscaperConfig extends Config {
 			position = 1
 	)
 	default boolean showCollecting() { return true; }
+	@ConfigItem(
+			keyName = "showSkilling",
+			name = "Show Skilling methods",
+			description = "Show Skilling moneymaking methods",
+			position = 2
+	)
+	default boolean showSkilling() { return true; }
+	@ConfigItem(
+			keyName = "showRequirements",
+			name = "Show methods with requirements",
+			description = "Show moneymaking methods with requirements",
+			position = 3
+	)
+	default boolean showRequirements() { return true; }
 }
