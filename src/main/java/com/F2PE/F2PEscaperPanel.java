@@ -33,17 +33,13 @@ class F2PEscaperPanel extends PluginPanel {
     private final JLabel headerLabel = new JLabel("<html><h3>Item: (Wiki GP | Current GP)</h3></html>");
     private final JLabel processingHeader = new JLabel("<html><h2>Processing</h2></html>");
     private final JLabel pieShellHeader = new JLabel("<html><h3>Pie Shell Money Maker</h3></html>");
-    private JLabel pieDishPriceLabel = new JLabel();
-    private JLabel pastryDoughPriceLabel = new JLabel();
-    private JLabel pieShellPriceLabel = new JLabel();
+    private JLabel pieShellPricesLabel = new JLabel();
     private JLabel pieShellAnswer = new JLabel();
     private final JLabel redDyeHeader = new JLabel("<html><h3>Red Dye Money Maker</h3></html>");
-    private JLabel redberryPriceLabel = new JLabel();
+    private JLabel redDyePricesLabel = new JLabel();
     private JLabel redDyeAnswer = new JLabel();
-    private JLabel redDyePriceLabel = new JLabel();
     private final JLabel chocolateHeader = new JLabel("<html><h3>Chocolate Grind Money Maker</h3></html>");
-    private JLabel chocolateBarPriceLabel = new JLabel();
-    private JLabel chocolateDustPriceLabel = new JLabel();
+    private JLabel chocolateDustPricesLabel = new JLabel();
     private JLabel chocolateAnswer = new JLabel();
     private final JLabel collectingHeader = new JLabel("<html><h2>Collecting</h2></html>");
     private final JLabel sheepShearHeader = new JLabel("<html><h3>Sheep Shear Money Maker</h3></html>");
@@ -55,14 +51,10 @@ class F2PEscaperPanel extends PluginPanel {
     private final JLabel skillingHeader = new JLabel("<html><h2>Skilling</h2></html>");
     private final JLabel diamondHeaderLabel = new JLabel("<html><h3>Diamond Necklace Money Maker</h3></html>");
     private final JLabel diamondRequirements = new JLabel("<html><h3>Requires 56+ Crafting</h3></html>");
-    private JLabel diamondPriceLabel = new JLabel();
-    private JLabel goldBarPriceLabel = new JLabel();
-    private JLabel diamondNecklacePriceLabel = new JLabel();
+    private JLabel diamondNecklacePricesLabel = new JLabel();
     private JLabel diamondNecklaceAnswer = new JLabel();
     private final JLabel bronzeBarHeader = new JLabel("<html><h3>Bronze Bar Money Maker</h3></html>");
-    private JLabel tinPriceLabel = new JLabel();
-    private JLabel copperPriceLabel = new JLabel();
-    private JLabel bronzeBarPriceLabel = new JLabel();
+    private JLabel bronzeBarPricesLabel = new JLabel();
     private JLabel bronzeBarAnswer = new JLabel();
 
 
@@ -70,15 +62,16 @@ class F2PEscaperPanel extends PluginPanel {
     //Arrays
     private List<JSeparator> separators = new ArrayList<>();
     private final JLabel[] processingHeaderArray = {processingHeader};
-    private final JLabel[] pieShellLabels = {pieShellHeader, pieDishPriceLabel, pastryDoughPriceLabel, pieShellPriceLabel, pieShellAnswer};
-    private final JLabel[] redDyeLabels = {redDyeHeader, redberryPriceLabel, redDyePriceLabel, redDyeAnswer};
-    private final JLabel[] chocolateLabels = {chocolateHeader, chocolateBarPriceLabel, chocolateDustPriceLabel, chocolateAnswer};
+    private final JLabel[] resetableLabels = {pieShellPricesLabel,redDyePricesLabel,chocolateDustPricesLabel,woolPriceLabel,beerPriceLabel, diamondNecklacePricesLabel,bronzeBarPricesLabel};
+    private final JLabel[] pieShellLabels = {pieShellHeader, pieShellPricesLabel, pieShellAnswer};
+    private final JLabel[] redDyeLabels = {redDyeHeader, redDyePricesLabel, redDyeAnswer};
+    private final JLabel[] chocolateLabels = {chocolateHeader, chocolateDustPricesLabel, chocolateAnswer};
     private final JLabel[] collectingHeaderArray = {collectingHeader};
     private final JLabel[] sheepShearLabels = {sheepShearHeader, woolPriceLabel, woolAnswer};
     private final JLabel[] beerLabels = {beerHeader, beerPriceLabel, beerAnswer};
     private final JLabel[] skillingHeaderArray = {skillingHeader};
-    private final JLabel[] diamondNecklaceLabels = {diamondHeaderLabel,diamondRequirements, diamondPriceLabel, goldBarPriceLabel, diamondNecklacePriceLabel, diamondNecklaceAnswer};
-    private final JLabel[] bronzeBarLabels = {bronzeBarHeader,tinPriceLabel,copperPriceLabel,bronzeBarPriceLabel,bronzeBarAnswer};
+    private final JLabel[] diamondNecklaceLabels = {diamondHeaderLabel,diamondRequirements, diamondNecklacePricesLabel, diamondNecklaceAnswer};
+    private final JLabel[] bronzeBarLabels = {bronzeBarHeader,bronzeBarPricesLabel,bronzeBarAnswer};
     private final JPanel F2PEscaperPanel = new JPanel();
     private GridBagConstraints c;
 
@@ -102,29 +95,25 @@ class F2PEscaperPanel extends PluginPanel {
         int pastryDoughPrice = updatePrices("Pastry dough");
         int pieShellPrice = updatePrices("Pie shell");
         int pieShellProfit = pieShellPrice-pieDishPrice-pastryDoughPrice;
-        setupLabels(pieDishPriceLabel,"Buy Pie Dish: (50gp | ",pieDishPrice,50, true);
-        setupLabels(pastryDoughPriceLabel,"Buy Pastry Dough: (256gp | ",pastryDoughPrice,256, true);
-        setupLabels(pieShellPriceLabel,"Sell Pie Shell: (484gp | ",pieShellPrice,484, false);
+        setupLabels(pieShellPricesLabel,"Buy Pie Dish: (50gp | ",pieDishPrice,50, true);
+        setupLabels(pieShellPricesLabel,"Buy Pastry Dough: (256gp | ",pastryDoughPrice,256, true);
+        setupLabels(pieShellPricesLabel,"Sell Pie Shell: (484gp | ",pieShellPrice,484, false);
         setupProfitLabels(pieShellAnswer,pieShellProfit,125);
 
         //Red Dye moneymaker
-        this.result = itemManager.search("Redberries");
-        int redberriesPrice = findItemPrice(result, "Redberries");
-        this.result = itemManager.search("Red Dye");
-        int redDyePrice = findItemPrice(result, "Red dye");
+        int redberriesPrice = updatePrices("Redberries");
+        int redDyePrice = updatePrices("Red dye");
         int redDyeProfit = redDyePrice-((redberriesPrice*3)+5);
-        setupLabels(redberryPriceLabel,"Buy Redberries: (70gp | ",redberriesPrice,70, true);
-        setupLabels(redDyePriceLabel,"Sell Red Dye: (386gp | ",redDyePrice,386, false);
+        setupLabels(redDyePricesLabel,"Buy Redberries: (70gp | ",redberriesPrice,70, true);
+        setupLabels(redDyePricesLabel,"Sell Red Dye: (386gp | ",redDyePrice,386, false);
         setupProfitLabels(redDyeAnswer,redDyeProfit,1000);
 
         //Griding Chocolate Bar moneymaker
-        this.result = itemManager.search("chocolate bar");
-        int chocolateBarPrice = findItemPrice(result, "Chocolate bar");
-        this.result = itemManager.search("chocolate dust");
-        int chocolateDustPrice = findItemPrice(result, "Chocolate dust");
+        int chocolateBarPrice = updatePrices("Chocolate bar");
+        int chocolateDustPrice = updatePrices("Chocolate dust");
         int chocolateProfit = chocolateDustPrice-chocolateBarPrice;
-        setupLabels(chocolateBarPriceLabel,"Buy Chocolate Bar: (20gp | ",chocolateBarPrice,20, true);
-        setupLabels(chocolateDustPriceLabel,"Sell Chocolate Dust: (43gp | ",chocolateDustPrice,43, false);
+        setupLabels(chocolateDustPricesLabel,"Buy Chocolate Bar: (20gp | ",chocolateBarPrice,20, true);
+        setupLabels(chocolateDustPricesLabel,"Sell Chocolate Dust: (43gp | ",chocolateDustPrice,43, false);
         setupProfitLabels(chocolateAnswer,chocolateProfit, 1800);
     }
     private void collectingSetup(){
@@ -144,9 +133,9 @@ class F2PEscaperPanel extends PluginPanel {
         int goldBarPrice = updatePrices("Gold bar");
         int diamondNecklacePrice = updatePrices("Diamond necklace");
         int diamondNecklaceProfit = diamondNecklacePrice-goldBarPrice-diamondPrice;
-        setupLabels(diamondPriceLabel,"Buy Diamond: (1790gp | ",diamondPrice,1790, true);
-        setupLabels(goldBarPriceLabel,"Buy Gold bar: (110gp | ",goldBarPrice,110, true);
-        setupLabels(diamondNecklacePriceLabel,"Sell Diamond Necklace: (2041gp | ",diamondNecklacePrice,2041, false);
+        setupLabels(diamondNecklacePricesLabel,"Buy Diamond: (1790gp | ",diamondPrice,1790, true);
+        setupLabels(diamondNecklacePricesLabel,"Buy Gold bar: (110gp | ",goldBarPrice,110, true);
+        setupLabels(diamondNecklacePricesLabel,"Sell Diamond Necklace: (2041gp | ",diamondNecklacePrice,2041, false);
         setupProfitLabels(diamondNecklaceAnswer, diamondNecklaceProfit,1000);
 
         //Bronze smithing moneymaker
@@ -154,9 +143,9 @@ class F2PEscaperPanel extends PluginPanel {
         int copperPrice = updatePrices("Copper ore");
         int bronzeBarPrice = updatePrices("Bronze bar");
         int bronzeBarProfit = bronzeBarPrice-copperPrice-tinPrice;
-        setupLabels(tinPriceLabel,"Buy Tin ore: (65gp | ",tinPrice,65, true);
-        setupLabels(copperPriceLabel,"Buy Copper ore: (90gp | ",copperPrice,90, true);
-        setupLabels(bronzeBarPriceLabel,"Sell Bronze bar: (210gp | ",bronzeBarPrice,210, false);
+        setupLabels(bronzeBarPricesLabel,"Buy Tin ore: (65gp | ",tinPrice,65, true);
+        setupLabels(bronzeBarPricesLabel,"Buy Copper ore: (90gp | ",copperPrice,90, true);
+        setupLabels(bronzeBarPricesLabel,"Sell Bronze bar: (210gp | ",bronzeBarPrice,210, false);
         setupProfitLabels(bronzeBarAnswer, bronzeBarProfit,600);
     }
     //Display Functions
@@ -181,10 +170,31 @@ class F2PEscaperPanel extends PluginPanel {
         }
     }
     private void setupLabels(JLabel label, String text, int price, int desiredPrice, boolean isBuy) {
-        if ((isBuy && price <= desiredPrice) || (!isBuy && price >= desiredPrice)) {
-            label.setText("<html>" + text + price + "gp) <font color='green'>&#x2714;</font></html>");
+        String labelText = label.getText();
+        StringBuilder updatedText = new StringBuilder();
+
+        if (labelText.endsWith("</html>")) {
+            labelText = labelText.substring(0, labelText.lastIndexOf("</html>"));
+            updatedText.append(labelText);
         } else {
-            label.setText("<html>" + text + price + "gp) <font color='red'>&#x2718;</font></html>");
+            updatedText.append("<html>");
+        }
+
+        if ((isBuy && price <= desiredPrice) || (!isBuy && price >= desiredPrice)) {
+            updatedText.append(text).append(price).append("gp) <font color='green'>&#x2714;</font>");
+        } else {
+            updatedText.append(text).append(price).append("gp) <font color='red'>&#x2718;</font>");
+        }
+
+        updatedText.append("<br></html>");
+        label.setText(updatedText.toString());
+    }
+
+    private void resetLabels(JLabel[]... labelArrays) {
+        for (JLabel[] labels : labelArrays) {
+            for (JLabel label : labels) {
+                label.setText("");
+            }
         }
     }
     private void endBlock(){
@@ -246,6 +256,7 @@ class F2PEscaperPanel extends PluginPanel {
         boolean showSkilling = config.showSkilling();
         boolean showRequirements = config.showRequirements();
 
+        resetLabels(resetableLabels);
         removeSeparators();
         endBlock();
         endBlock();
