@@ -77,9 +77,13 @@ class F2PEscaperPanel extends PluginPanel {
 
 
     //Setup Functions
-    private int updatePrices(String itemName) {
-        this.result = itemManager.search(itemName);
-        return findItemPrice(result, itemName);
+    private int[] updatePrices(String... itemNames) {
+        int[] prices = new int[itemNames.length];
+        for (int i = 0; i < itemNames.length; i++) {
+            this.result = itemManager.search(itemNames[i]);
+            prices[i] = findItemPrice(result, itemNames[i]);
+        }
+        return prices;
     }
     private static int findItemPrice(List<ItemPrice> itemPrices, String itemName) {
         for (ItemPrice itemPrice : itemPrices) {
@@ -91,61 +95,53 @@ class F2PEscaperPanel extends PluginPanel {
     }
     private void processingSetup(){
         //Pie Shell moneymaker
-        int pieDishPrice = updatePrices("Pie dish");
-        int pastryDoughPrice = updatePrices("Pastry dough");
-        int pieShellPrice = updatePrices("Pie shell");
-        int pieShellProfit = pieShellPrice-pieDishPrice-pastryDoughPrice;
-        setupLabels(pieShellPricesLabel,"Buy Pie Dish: (50gp | ",pieDishPrice,50, true);
-        setupLabels(pieShellPricesLabel,"Buy Pastry Dough: (256gp | ",pastryDoughPrice,256, true);
-        setupLabels(pieShellPricesLabel,"Sell Pie Shell: (484gp | ",pieShellPrice,484, false);
+        int [] pieShellPrices = updatePrices("Pie dish","Pastry dough","Pie shell");
+        int pieShellProfit = pieShellPrices[2]-pieShellPrices[1]-pieShellPrices[0];
+        setupLabels(pieShellPricesLabel,"Buy Pie Dish: (50gp | ",pieShellPrices[0],50, true);
+        setupLabels(pieShellPricesLabel,"Buy Pastry Dough: (256gp | ",pieShellPrices[1],256, true);
+        setupLabels(pieShellPricesLabel,"Sell Pie Shell: (484gp | ",pieShellPrices[2],484, false);
         setupProfitLabels(pieShellAnswer,pieShellProfit,125);
 
         //Red Dye moneymaker
-        int redberriesPrice = updatePrices("Redberries");
-        int redDyePrice = updatePrices("Red dye");
-        int redDyeProfit = redDyePrice-((redberriesPrice*3)+5);
-        setupLabels(redDyePricesLabel,"Buy Redberries: (70gp | ",redberriesPrice,70, true);
-        setupLabels(redDyePricesLabel,"Sell Red Dye: (386gp | ",redDyePrice,386, false);
+        int [] redDyePrices = updatePrices("Redberries","Red dye");
+        int redDyeProfit = redDyePrices[1]-((redDyePrices[0]*3)+5);
+        setupLabels(redDyePricesLabel,"Buy Redberries: (70gp | ",redDyePrices[0],70, true);
+        setupLabels(redDyePricesLabel,"Sell Red Dye: (386gp | ",redDyePrices[1],386, false);
         setupProfitLabels(redDyeAnswer,redDyeProfit,1000);
 
         //Griding Chocolate Bar moneymaker
-        int chocolateBarPrice = updatePrices("Chocolate bar");
-        int chocolateDustPrice = updatePrices("Chocolate dust");
-        int chocolateProfit = chocolateDustPrice-chocolateBarPrice;
-        setupLabels(chocolateDustPricesLabel,"Buy Chocolate Bar: (20gp | ",chocolateBarPrice,20, true);
-        setupLabels(chocolateDustPricesLabel,"Sell Chocolate Dust: (43gp | ",chocolateDustPrice,43, false);
+        int [] chocolateDustPrices = updatePrices("Chocolate bar", "Chocolate dust");
+        int chocolateProfit = chocolateDustPrices[1]-chocolateDustPrices[0];
+        setupLabels(chocolateDustPricesLabel,"Buy Chocolate Bar: (20gp | ",chocolateDustPrices[0],20, true);
+        setupLabels(chocolateDustPricesLabel,"Sell Chocolate Dust: (43gp | ",chocolateDustPrices[1],43, false);
         setupProfitLabels(chocolateAnswer,chocolateProfit, 1800);
     }
     private void collectingSetup(){
         //Sheep Shearing moneymaker
-        int woolPrice = updatePrices("Wool");
-        setupLabels(woolPriceLabel,"Sell Wool: (133gp | ",woolPrice,133, false);
-        setupProfitLabels(woolAnswer, woolPrice,350);
+        int [] woolPrice = updatePrices("Wool");
+        setupLabels(woolPriceLabel,"Sell Wool: (133gp | ",woolPrice[0],133, false);
+        setupProfitLabels(woolAnswer, woolPrice[0],350);
 
         //Beer buying moneymaker
-        int beerPrice = updatePrices("Beer");
-        setupLabels(beerPriceLabel,"Sell Beer: (105gp | ",beerPrice,105, false);
-        setupProfitLabels(beerAnswer, woolPrice,400);
+        int [] beerPrice = updatePrices("Beer");
+        setupLabels(beerPriceLabel,"Sell Beer: (105gp | ",beerPrice[0],105, false);
+        setupProfitLabels(beerAnswer, woolPrice[0],400);
     }
     private void skillingSetup(){
         //Crafting diamond jewelry moneymaker
-        int diamondPrice = updatePrices("Diamond");
-        int goldBarPrice = updatePrices("Gold bar");
-        int diamondNecklacePrice = updatePrices("Diamond necklace");
-        int diamondNecklaceProfit = diamondNecklacePrice-goldBarPrice-diamondPrice;
-        setupLabels(diamondNecklacePricesLabel,"Buy Diamond: (1790gp | ",diamondPrice,1790, true);
-        setupLabels(diamondNecklacePricesLabel,"Buy Gold bar: (110gp | ",goldBarPrice,110, true);
-        setupLabels(diamondNecklacePricesLabel,"Sell Diamond Necklace: (2041gp | ",diamondNecklacePrice,2041, false);
+        int [] diamondNecklacePrices = updatePrices("Diamond","Gold bar","Diamond necklace");
+        int diamondNecklaceProfit = diamondNecklacePrices[2]-diamondNecklacePrices[1]-diamondNecklacePrices[0];
+        setupLabels(diamondNecklacePricesLabel,"Buy Diamond: (1790gp | ",diamondNecklacePrices[0],1790, true);
+        setupLabels(diamondNecklacePricesLabel,"Buy Gold bar: (110gp | ",diamondNecklacePrices[1],110, true);
+        setupLabels(diamondNecklacePricesLabel,"Sell Diamond Necklace: (2041gp | ",diamondNecklacePrices[2],2041, false);
         setupProfitLabels(diamondNecklaceAnswer, diamondNecklaceProfit,1000);
 
         //Bronze smithing moneymaker
-        int tinPrice = updatePrices("Tin ore");
-        int copperPrice = updatePrices("Copper ore");
-        int bronzeBarPrice = updatePrices("Bronze bar");
-        int bronzeBarProfit = bronzeBarPrice-copperPrice-tinPrice;
-        setupLabels(bronzeBarPricesLabel,"Buy Tin ore: (65gp | ",tinPrice,65, true);
-        setupLabels(bronzeBarPricesLabel,"Buy Copper ore: (90gp | ",copperPrice,90, true);
-        setupLabels(bronzeBarPricesLabel,"Sell Bronze bar: (210gp | ",bronzeBarPrice,210, false);
+        int [] bronzeBarPrices = updatePrices("Tin ore","Copper ore","Bronze bar");
+        int bronzeBarProfit = bronzeBarPrices[2]-bronzeBarPrices[1]-bronzeBarPrices[0];
+        setupLabels(bronzeBarPricesLabel,"Buy Tin ore: (65gp | ",bronzeBarPrices[0],65, true);
+        setupLabels(bronzeBarPricesLabel,"Buy Copper ore: (90gp | ",bronzeBarPrices[1],90, true);
+        setupLabels(bronzeBarPricesLabel,"Sell Bronze bar: (210gp | ",bronzeBarPrices[2],210, false);
         setupProfitLabels(bronzeBarAnswer, bronzeBarProfit,600);
     }
     //Display Functions
