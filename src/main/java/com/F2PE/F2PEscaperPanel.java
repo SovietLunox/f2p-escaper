@@ -14,10 +14,6 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.http.api.item.ItemPrice;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 
 @Slf4j
 class F2PEscaperPanel extends PluginPanel {
@@ -62,7 +58,6 @@ class F2PEscaperPanel extends PluginPanel {
     //Arrays
     private List<JSeparator> separators = new ArrayList<>();
     private final JLabel[] processingHeaderArray = {processingHeader};
-    private final JLabel[] resetableLabels = {pieShellPricesLabel,redDyePricesLabel,chocolateDustPricesLabel,woolPriceLabel,beerPriceLabel, diamondNecklacePricesLabel,bronzeBarPricesLabel};
     private final JLabel[] pieShellLabels = {pieShellHeader, pieShellPricesLabel, pieShellAnswer};
     private final JLabel[] redDyeLabels = {redDyeHeader, redDyePricesLabel, redDyeAnswer};
     private final JLabel[] chocolateLabels = {chocolateHeader, chocolateDustPricesLabel, chocolateAnswer};
@@ -252,11 +247,11 @@ class F2PEscaperPanel extends PluginPanel {
         boolean showSkilling = config.showSkilling();
         boolean showRequirements = config.showRequirements();
 
-        resetLabels(resetableLabels);
         removeSeparators();
         endBlock();
         endBlock();
         if(showProcessing){
+            resetLabels(pieShellLabels,redDyeLabels,chocolateLabels);
             processingSetup();
 
             displayLabels(processingHeaderArray,pieShellLabels,redDyeLabels,chocolateLabels);
@@ -265,6 +260,7 @@ class F2PEscaperPanel extends PluginPanel {
             hideLabels(processingHeaderArray,chocolateLabels,pieShellLabels,redDyeLabels);
         }
         if(showCollecting){
+            resetLabels(pieShellLabels,sheepShearLabels,beerLabels);
             collectingSetup();
 
             displayLabels(collectingHeaderArray,sheepShearLabels,beerLabels);
@@ -273,6 +269,7 @@ class F2PEscaperPanel extends PluginPanel {
             hideLabels(collectingHeaderArray, sheepShearLabels, beerLabels);
         }
         if(showSkilling){
+            resetLabels(diamondNecklaceLabels,bronzeBarLabels);
             skillingSetup();
 
             displayLabels(skillingHeaderArray,bronzeBarLabels);
